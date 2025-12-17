@@ -1,4 +1,4 @@
-agno==1.6.3
+agno==2.3.13
 google-genai==1.55.0
 httpx==0.28.1
 psycopg2
