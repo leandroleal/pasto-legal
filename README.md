@@ -28,25 +28,26 @@
 
    ```
 
-4. **To run with FastAPI Server:**
+3. **To run with FastAPI Server:**
 
    ```bash
-   python -m src.app.fastapi_server
+   python example_main.py
    ```
 
-5. **To run with Streamlit App :**
+4. **To run with Streamlit App :**
 
    ```bash
    python -m streamlit run ./app/streamlit_webapp.py
    ```
 
-6. **To (re)build this docker:**
+5. **To (re)build this docker:**
+
    ```bash
    docker build -t mapbiomas-ai:1.0 docker/
    ```
 
-7. **To Expose the FAST-API service through NGROK:**
+6. **To Expose the FAST-API service through NGROK:**
    ```bash
    ngrok config add-authtoken <AUTH>
-   ngrok http --url=joey-rational-escargot.ngrok-free.app 3000 
+   ngrok http --url=joey-rational-escargot.ngrok-free.app 3000
    ```

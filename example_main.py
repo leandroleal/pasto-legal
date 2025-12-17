@@ -12,8 +12,9 @@ from rich.json import JSON
 from rich.panel import Panel
 from rich.prompt import Prompt
 from rich import print
+from dotenv import load_dotenv
 
-
+load_dotenv()
 console = Console()
 
 
