@@ -5,7 +5,7 @@ from agno.models.google import Gemini
 from agno.team.team import Team
 from agno.db.sqlite import SqliteDb
 from agno.os.app import AgentOS
-from agno.os.interfaces.whatsapp import Whatsapp
+from utils.whatsapp import Whatsapp
 
 from rich.console import Console
 from rich.json import JSON
@@ -51,7 +51,7 @@ memory = Agent(
 
 
 agentPastureSearcher = Agent(
-    name="Pasture Searcher",
+    name="Pasture Especialist Agent",
     role="You can only answer questions related to the Pasture program in Brazil.",
     model=Gemini(id="gemini-2.5-flash", search=True),
     db=agent_memory,
@@ -73,7 +73,7 @@ multi_language_team = Team(
     reasoning=False,
     enable_agentic_memory=True,
     enable_user_memories=True,
-    add_history_to_context=True,  # renamed from add_history_to_messages
+    add_history_to_context=True, 
     num_history_runs=5,
     share_member_interactions=True,
     show_members_responses=False,
