@@ -60,8 +60,8 @@ class SICARTool(Toolkit):
 # agent_storage = SqliteStorage(table_name="whatsapp_sessions", db_file="tmp/memory.db")
 # memory_db = SqliteMemoryDb(table_name="memory", db_file="tmp/memory.db")
 
-session_db = SqliteDb(db_file="tmp/memory.db", memory_table="memory")
-agent_db = SqliteDb(db_file="tmp/memory.db", memory_table="agent_storage")
+session_db = SqliteDb(db_file="data/memory.db", memory_table="memory")
+agent_db = SqliteDb(db_file="data/memory.db", memory_table="agent_storage")
 
 geo_agent = Agent(
     name="Pasto Legal Geo-Agent",
