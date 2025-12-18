@@ -6,7 +6,7 @@ import json
 import websockets
 import asyncio
 
-st.title("🤖 Chat Box Pasto Legal")
+st.title("🐂 Chat Box Pasto Legal")
 
 # Initialize chat history and session_id in session state if they don't exist
 if "messages" not in st.session_state:
@@ -21,11 +21,27 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 
+files_uploaded = st.file_uploader(
+        "Envie imagens/áudio (png, jpg, webp, wav, mp3, mp4)",
+        type=["png", "jpg", "jpeg", "webp", "wav", "mp3", "mp4", "mpeg"],
+        accept_multiple_files=True,
+)   
 
 # '''NOT STREAM INTERACTIONS'''
 # Get user input from chat input box
-if user_query := st.chat_input("Ask me anything..."):
+if user_query := st.chat_input("Pergunte sobre pastagem..."):
+
     # Add user message to history and display it
+    payload = {
+        "message": user_query,
+        "session_id": st.session_state.session_id,
+    }
+
+    files = []
+    for f in files_uploaded or []:
+        # requests precisa de (campo, (nome, fileobj, mime))
+        files.append(("files", (f.name, f, f.type or "application/octet-stream")))
+
     st.session_state.messages.append({"role": "user", "content": user_query})
     with st.chat_message("user"):
         st.markdown(user_query)
@@ -36,7 +52,7 @@ if user_query := st.chat_input("Ask me anything..."):
         full_response = ""
         
         # --- Call the FastAPI chatbot ---
-        api_url = "http://localhost:3000/teams/pastolegalteam/runs"
+        api_url = "http://localhost:3000/teams/pasto-legal-team/runs"
         payload = {
             "message": user_query,
             "session_id": st.session_state.session_id,
@@ -44,7 +60,7 @@ if user_query := st.chat_input("Ask me anything..."):
         }
         
         try:
-            api_response = requests.post(api_url, data=payload)
+            api_response = requests.post(api_url, data=payload, files=files)
             api_response.raise_for_status()  # Raise an HTTPError for bad responses (4xx or 5xx)
             
             # --- IMPORTANT ---
@@ -61,6 +77,7 @@ if user_query := st.chat_input("Ask me anything..."):
             # Add a blinking cursor to simulate typing
             message_placeholder.markdown(full_response + "▌")
         message_placeholder.markdown(full_response)
+    
         
     # Add assistant's response to chat history
     st.session_state.messages.append({"role": "assistant", "content": full_response})
