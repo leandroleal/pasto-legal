@@ -1,15 +1,16 @@
 from agno.agent import Agent
+from agno.models.google import Gemini
 
-# TODO: Implementar o agente assistente.
+
+# TODO: Mudar o nome do agente.
+# TODO: Corrigir instruções do agente.
 assistant_agent = Agent(
-    name="Zé da Caderneta",
-    role="Assistente de campo responsável por coletar dados/informações do produtor",
+    name="Amigão Legalzão",
+    role="Assistente reponsável por informar ao usuário as ferramentas disponíveis.",
     tools=[],
     instructions=[
-        "Sua única missão é descobrir informações relacionadas a propriedade do usuário.",
-        "Se o usuário não disser tudo de uma vez, pergunte UM dado por vez.",
-        "Não dê conselhos técnicos. Apenas anote.",
+        "Sua única missão é, com base no seu conhecimento, informar ao usuário que as funções disponiveis são: gerar imagem da propriedade rural.",
         "Seja simpático e use linguagem simples."
     ],
-    model="gpt-4o-mini" 
+    model=Gemini(id="gemini-2.5-flash")
 )

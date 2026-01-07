@@ -8,17 +8,16 @@ from io import BytesIO
 from agno.tools import Toolkit, tool
 from agno.tools.function import ToolResult
 from agno.media import Image
+from agno.run import RunContext
 
-from utils.hooks.validation_hooks import validate_car_hook
+from app.hooks.validation_hooks import validate_car_hook
 
 #TODO: Escrever ferramenta para visualização da área de pastagem do usuário.
-#TODO: As ferramentas query_pasture_sicar, query_pasture e view_farm acessam a gemetria da propriedade 
 
-
-@tool(tool_hooks=[validate_car_hook])
+@tool(pre_hook=validate_car_hook)
 def generate_property_image(run_context: RunContext) -> ToolResult:
     """
-    Gera uma imagem de satélite da propriedade rural baseada nos dados do CAR 
+    Gera uma imagem de satélite da propriedade rural baseada nos dados do CAR do usuário
     armazenados na sessão. Esta função não requer parâmetros, pois recupera 
     automaticamente a geometria da fazenda do estado atual da conversa.
 
@@ -46,21 +45,19 @@ def generate_property_image(run_context: RunContext) -> ToolResult:
         .median()
     )
 
-    # Criar os parâmetros de visualização
     vis_params = {"bands": ["B4","B3","B2"],"min": 0,"max": 3000}
     sentinel = sentinel.visualize(**vis_params)
 
-    #Configurando o estilo do contorno da propriedade
     empty = ee.Image().byte()
     outline = empty.paint(ee.FeatureCollection(roi), 1, 3)
     outline = outline.updateMask(outline)
     outline_rgb = outline.visualize(**{"palette":['FF0000']})
 
-    #Unificando os dados
     final_image = sentinel.blend(outline_rgb).clip(ee.Feature(roi))
 
-    #Gerando a url
     url = final_image.getThumbURL({"dimensions": 1024,"format": "png"})
+
+    print("----------------------------> ", url)
 
     try:
         response = requests.get(url, timeout=20)
@@ -77,27 +74,29 @@ def generate_property_image(run_context: RunContext) -> ToolResult:
 
     except Exception as e:
         return ToolResult(content=f"Erro ao gerar imagem: {str(e)}")
-    
+
+
+@tool(tool_hooks=[validate_car_hook])
 def query_pasture(run_context: RunContext) -> dict:
     """
-    Esta ferramenta é especializada no cálculo de área de pastagem,
-        vigor da pastagem, áreas de pastagem degradadas (baixo vigor), biomassa total e
-        a idade de uma área de pastagem/pastoreio/campo natural.
+    Calcula a área de pastagem, vigor da pastagem, áreas de pastagem degradadas (baixo vigor),
+    biomassa total e a idade baseada nos dados do CAR do usuário armazenados na sessão. Esta função não
+    requer parâmetros, pois recupera automaticamente a geometria da fazenda do estado atual da conversa..
+
+    Return:
+        Dicionário contendo a área de pastagem, vigor da pastagem, áreas de pastagem degradadas (baixo vigor), biomassa total e a idade.
     """
     
-    datasets = {
+    DATASETS = {
         'age': ee.Image('projects/mapbiomas-public/assets/brazil/lulc/collection10/mapbiomas_brazil_collection10_pasture_age_v2'),
         'vigor': ee.Image('projects/mapbiomas-public/assets/brazil/lulc/collection10/mapbiomas_brazil_collection10_pasture_vigor_v3'),
         'biomass': ee.Image('projects/mapbiomas-public/assets/brazil/lulc/collection10/mapbiomas_brazil_collection10_pasture_biomass_v2')
     }
 
-    aggregation_type = ee.Dictionary({
-        'biomass':ee.Reducer.sum(),
-        'precipitation':ee.Reducer.mean()
+    AGGREGATION_TYPE = ee.Dictionary({
+        'biomass': ee.Reducer.sum(),
+        'precipitation': ee.Reducer.mean()
     })
-
-    if run_context.session_state['car'] is None:
-        return "Send your location, so we can retrieve data for your rural properties (CAR) via SICAR"
 
     car = run_context.session_state['car']
 
@@ -111,9 +110,9 @@ def query_pasture(run_context: RunContext) -> dict:
 
     listData = []
 
-    for data in datasets:
-        selectedBand = datasets[data].bandNames().size().subtract(1)
-        last = datasets[data].select(selectedBand)
+    for data in DATASETS:
+        selectedBand = DATASETS[data].bandNames().size().subtract(1)
+        last = DATASETS[data].select(selectedBand)
 
         if data == 'age':
             last = last.subtract(200)
@@ -126,7 +125,7 @@ def query_pasture(run_context: RunContext) -> dict:
                 last = last
 
             yearDict = last.reduceRegion(
-                    reducer=aggregation_type.get(data),#ee.Reducer.sum(),
+                    reducer=AGGREGATION_TYPE.get(data),#ee.Reducer.sum(),
                     geometry=roi,
                     scale=30,
                     maxPixels=1e13

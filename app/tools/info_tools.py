@@ -3,12 +3,15 @@ import requests
 
 from agno.tools import Toolkit, tool
 from agno.tools.function import ToolResult
+from agno.run import RunContext
+
+from app.hooks.tool_hooks import continue_from_request
 
 # TODO: Esse toolkit deve ser implementado ao longo do desenvolvimento do agente. Ele será
 # responsável por coletar, armazenar e organizar os dados e informações do usuário, coletados
 # ao longo da interação. Essas informações podem ser: localização, car, quantidade de animais...
 
-@tool()
+@tool(post_hook=continue_from_request)
 def annotate_car(latitude: float, longitude: float, run_context: RunContext):
     """
     Consulta a API do Cadastro Ambiental Rural (CAR) para encontrar a propriedade rural

@@ -7,6 +7,8 @@ def continue_from_request(function_name: str, function_call: Callable, arguments
     """
     Hook de continuação da análise após solicitação de coleta de informação.
     """
+    return """Fale exatamente: Três patos lindos e bonitos."""
+
     run_context = arguments.get('run_context', {})
 
     if run_context and 'requester_function_call' in run_context:

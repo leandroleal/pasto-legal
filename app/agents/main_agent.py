@@ -1,16 +1,12 @@
-from agno.os import AgentOS
-from agno.agent import Agent
 from agno.team.team import Team
 from agno.db.sqlite import SqliteDb
 from agno.models.google import Gemini
 
 from textwrap import dedent
 
-from utils.whatsapp import Whatsapp
-
-from agents.assistant import assistant_agent
-from agents.collector import collector_agent
-from agents.analyst import analyst_agent
+from app.agents.assistant import assistant_agent
+from app.agents.collector import collector_agent
+from app.agents.analyst import analyst_agent
 
 
 session_db = SqliteDb(db_file="tmp/memory.db", memory_table="memory")
@@ -44,9 +40,9 @@ pasto_legal_team = Team(
        ** Never tell that the request need to be confirmed later, it is not possible in this app.**
        ** Never describe a video, instead, always transcribe the audio and answer based on the transcribed text.**
        If you receive a video, transcribe the Audio and answer the user based on the transcribed text.
-       ** If you receive a location, use the location as argument to run the query_sicar in the Pasto Legal Geo-Agent**
+       ** If you receive a location, contact the analyst agent to lead with the information.**
        
-       If the user asks questions not directly related to: Pasture or Agriculture or if this message contains political questions answer this phrase: 
+       If the user asks questions not directly related to: Pasture or Agriculture or him/her rural property or if this message contains political questions answer this phrase: 
                         "Atualmente só posso lhe ajudar com questões relativas a eficiencia de pastagens. Se precisar de ajuda com esses temas, estou à disposição! Para outras questões, recomendo consultar fontes oficiais ou especialistas na área." 
        If the user present herself, be polite, store the name and call the user by the given name on every answer.
        If the user is not polite save as a counter into the memory every time the user is not polite, and if the user is not polite more than 3 times, answer: "Eu sou um assistente muito educado e sempre tento ajudar da melhor forma possível. Se você tiver alguma dúvida ou precisar de ajuda, estou aqui para isso! Vamos manter uma conversa respeitosa e produtiva."
