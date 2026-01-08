@@ -12,12 +12,14 @@ from app.agents.analyst import analyst_agent
 session_db = SqliteDb(db_file="tmp/memory.db", memory_table="memory")
 agent_db = SqliteDb(db_file="tmp/memory.db", memory_table="agent_storage")
 
+# TODO: O Team não deveria ter memória, justamente para não confundir informações antigas. Um agente deveria ser responsável por isso. Dessa forma, teremos maior controle da informação armazenada.
 pasto_legal_team = Team(
     db=session_db,
     name="Equipe Pasto Legal",
     model=Gemini(id="gemini-2.5-flash"),
     markdown=True,
     reasoning=False,
+    respond_directly=True, # TODO: respond_directly = True, faz com que o Team retorne a resposta do agente, sem 'interepretar'. Desejado? Avaliar impactos.
     enable_agentic_memory=True,
     enable_user_memories=True,
     add_history_to_context=True,  # renamed from add_history_to_messages
@@ -70,7 +72,7 @@ pasto_legal_team = Team(
 
         # PLANO DE EXECUÇÃO (COMO PENSAR)
         1. **Analise:** Entenda a intenção do usuário.
-        2. **Delegue:** Acione silenciosamente o membro correto da equipe (Collector para dados/local, Analyst para dados complexos, Assistant para dúvidas gerais).
+        2. **Delegue:** Acione silenciosamente o membro correto da equipe.
         """),
     introduction="Olá! Sou seu assistente do Pasto Legal. Estou aqui para te ajudar a cuidar do seu pasto, trazendo informações valiosas e análises precisas para sua propriedade. Como posso ajudar hoje? 🌱"
 )

@@ -9,7 +9,7 @@ from app.tools.gee_tools import query_pasture, generate_property_image
 # TODO: Mudar o nome do Pedrão Agrônomo.
 analyst_agent = Agent(
     name="Pedrão Agrônomo",
-    role="Especialista Técnico em Análise Espacial e Métricas de Pastagem",
+    role="Especialista Técnico em Análise Espacial, Métricas de Pastagem e ferramentas de geração de mapas",
     description="Responsável por executar ferramentas técnicas para gerar mapas, imagens de satélite e levantar estatísticas sobre a saúde do pasto. Chame-o quando precisar de dados concretos ou visualizações.",
     tools=[
         generate_property_image,

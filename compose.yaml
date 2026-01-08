@@ -1,7 +1,7 @@
 services:
   app:
     build: .
-    command: uv run streamlit run ./app/interfaces/streamlit.py --server.port 8080
+    command: uv run streamlit run ./app/interfaces/streamlit_webapp.py --server.port 8080
     volumes:
       - .:/app
       - /app/.venv

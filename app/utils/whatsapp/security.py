@@ -47,9 +47,7 @@ def validate_webhook_signature(payload: bytes, signature_header: Optional[str]) 
     app_secret = get_app_secret()
     expected_signature = signature_header.split("sha256=")[1]
 
-    # Calculate signature
     hmac_obj = hmac.new(app_secret.encode("utf-8"), payload, hashlib.sha256)
     calculated_signature = hmac_obj.hexdigest()
 
-    # Compare signatures using constant-time comparison
     return hmac.compare_digest(calculated_signature, expected_signature)

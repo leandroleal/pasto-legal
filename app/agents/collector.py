@@ -6,7 +6,8 @@ from agno.models.google import Gemini
 from app.tools.info_tools import annotate_car
 
 # TODO: Implementar a tool ProducerDB.
-# TODO: Talvez armazenar apenas informações de proprieda. Implentar isso por meio de 'description' e 'intructions'
+# TODO: Talvez armazenar apenas informações de proprieda. Implentar isso por meio de 'description' e 'intructions'.
+# TODO: Deve armazenar fotos relacionados a pastagem ou propriedade rural.
 collector_agent = Agent(
     name="Zé da Caderneta",
     role="Arquivista de Dados e Informações Cadastrais",

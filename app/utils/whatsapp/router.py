@@ -21,7 +21,6 @@ def attach_routes(router: APIRouter, agent: Optional[Agent] = None, team: Option
     if agent is None and team is None:
         raise ValueError("Either agent or team must be provided.")
 
-    # Create WhatsApp tools instance once for reuse
     whatsapp_tools = WhatsAppTools(async_mode=True)
 
     @router.get("/status")
@@ -88,6 +87,7 @@ def attach_routes(router: APIRouter, agent: Optional[Agent] = None, team: Option
         log_info(message)
 
         try:
+            message_text = ""
             message_image = None
             message_video = None
             message_audio = None
@@ -95,37 +95,40 @@ def attach_routes(router: APIRouter, agent: Optional[Agent] = None, team: Option
             
             message_id = message.get("id")
             await typing_indicator_async(message_id)
-            
-            if message.get("type") == "text":
-                message_text = message["text"]["body"]
-            elif message.get("type") == "image":
-                try:
-                    message_text = message["image"]["caption"]
-                except Exception:
-                    message_text = "Describe the image"
-                finally:
-                    message_image = message["image"]["id"]
-            elif message.get("type") == "video":
-                try:
-                    message_text = message["video"]["caption"]
-                except Exception:
-                    message_text = "Describe the video"
-                finally:
-                    message_video = message["video"]["id"]
-            elif message.get("type") == "audio":
-                message_text = "Reply to audio"
-                message_audio = message["audio"]["id"]
-            elif message.get("type") == "document":
-                message_text = "Process the document"
-                message_doc = message["document"]["id"]
-            elif message.get("type") == "location":
-                message_text = f"Recupere o limite da minha propriedade rural (SICARTool) com a área de pastagem para a coordenada geográfica {message['location']['latitude']}, lon:{message['location']['longitude']}"
-            else:
-                return
+
+            match message.get("type"):
+                case "text":
+                    message_text = message["text"]["body"]
+                case "image":
+                    try:
+                        message_text = message["image"]["caption"]
+                    except Exception:
+                        message_text = "Describe the image"
+                    finally:
+                        message_image = message["image"]["id"]
+                case "video":
+                    try:
+                        message_text = message["video"]["caption"]
+                    except Exception:
+                        message_text = "Describe the video"
+                    finally:
+                        message_video = message["video"]["id"]
+                case "audio":
+                    message_text = "Reply to audio"
+                    message_audio = message["audio"]["id"]
+                case "document":
+                    message_text = "Process the document"
+                    message_doc = message["document"]["id"]
+                case "location":
+                    # TODO: Alterar prompt para um mais adequado com armazenamento.
+                    message_text = f"Armazene minha propriedade rural com o Zé da Caderneta {message['location']['latitude']}, lon:{message['location']['longitude']}. Depois, peça ao Pedrão Agrônomo para gerar a análise de pastagem da minha propriedade rural."
+                case _:
+                    return
 
             phone_number = message["from"]
             log_info(f"Processing message from {phone_number}: {message_text}")
 
+            # TODO: Só temos Team, não precisa do agent.
             # Generate and send response
             if agent:
                 response = await agent.arun(
