@@ -1,11 +1,14 @@
 services:
   app:
     build: .
-    command: uv run streamlit run ./app/streamlit_webapp.py --server.port 8080
+    command: uv run streamlit run ./app/interfaces/streamlit_webapp.py --server.port 8080
     volumes:
       - .:/app
       - /app/.venv
     ports:
       - "8080:8080"
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONDONTWRITEBYTECODE=1
     env_file:
       - .env
