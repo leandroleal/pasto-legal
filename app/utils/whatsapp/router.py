@@ -14,7 +14,7 @@ from agno.tools.whatsapp import WhatsAppTools
 from agno.utils.log import log_error, log_info, log_warning
 from agno.utils.whatsapp import get_media_async, send_image_message_async, typing_indicator_async, upload_media_async
 
-from utils.whatsapp.security import validate_webhook_signature
+from app.utils.whatsapp.security import validate_webhook_signature
 
 
 def attach_routes(router: APIRouter, agent: Optional[Agent] = None, team: Optional[Team] = None) -> APIRouter:

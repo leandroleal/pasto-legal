@@ -6,7 +6,7 @@ from agno.team import Team
 from agno.agent import Agent
 from agno.os.interfaces.base import BaseInterface
 
-from utils.whatsapp.router import attach_routes
+from app.utils.whatsapp.router import attach_routes
 
 class Whatsapp(BaseInterface):
     type = "whatsapp"
